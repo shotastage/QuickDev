@@ -109,6 +109,30 @@ import Testing
     }
 }
 
+@Test func storeLoadsOnlyMatchingRootIndexWhenRequested() throws {
+    try withTemporaryDirectory { directoryURL in
+        let storeURL = directoryURL.appendingPathComponent(".devctl", isDirectory: true)
+        let store = ProjectIndexStore(directoryURL: storeURL, fileManager: .default)
+        let scanDate = Date(timeIntervalSince1970: 1_744_000_200)
+        let index = ProjectIndex(
+            version: 1,
+            rootPath: "/tmp/Developer",
+            scannedAt: scanDate,
+            projects: []
+        )
+
+        _ = try store.save(index)
+
+        let matchingIndex = try store.loadIndex(matchingRootPath: "/tmp/Developer")
+        let mismatchedIndex = try store.loadIndex(matchingRootPath: "/tmp/Work")
+        let unfilteredIndex = try store.loadIndex(matchingRootPath: nil)
+
+        #expect(matchingIndex == index)
+        #expect(mismatchedIndex == nil)
+        #expect(unfilteredIndex == index)
+    }
+}
+
 @Test func scannerFailsForMissingRoot() {
     let rootURL = URL(fileURLWithPath: "/tmp/quickdev-missing-root-\(UUID().uuidString)", isDirectory: true)
     let scanner = ProjectScanner(fileManager: .default)

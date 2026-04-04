@@ -118,6 +118,19 @@ public struct ProjectIndexStore {
         }
     }
 
+    /// Loads the saved index only when its recorded scan root matches the requested root path.
+    public func loadIndex(matchingRootPath rootPath: String?) throws -> ProjectIndex? {
+        guard let index = try loadIndex() else {
+            return nil
+        }
+
+        guard let rootPath else {
+            return index
+        }
+
+        return index.rootPath == rootPath ? index : nil
+    }
+
     private func createDirectoryIfNeeded() throws {
         guard fileManager.fileExists(atPath: directoryURL.path) == false else {
             return

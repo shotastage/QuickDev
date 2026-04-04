@@ -19,7 +19,8 @@ struct ScanCommand: ParsableCommand {
 
     mutating func run() throws {
         let fileManager = FileManager.default
-        let rootURL = resolvedRootURL(fileManager: fileManager)
+        let support = ProjectIndexCommandSupport(fileManager: fileManager)
+        let rootURL = support.resolvedRootURL(from: root)
         let scanner = ProjectScanner(fileManager: fileManager)
         let store = ProjectIndexStore(fileManager: fileManager)
 
@@ -27,7 +28,7 @@ struct ScanCommand: ParsableCommand {
         let saveResult = try store.save(index)
 
         if json {
-            print(try renderJSON(index))
+            print(try support.renderJSON(index))
             return
         }
 
@@ -44,75 +45,6 @@ struct ScanCommand: ParsableCommand {
         }
 
         print("")
-        print(renderTable(for: index.projects))
+        print(support.renderTable(for: index.projects))
     }
-
-    private func resolvedRootURL(fileManager: FileManager) -> URL {
-        guard let root else {
-            return fileManager.homeDirectoryForCurrentUser
-                .appendingPathComponent("Developer", isDirectory: true)
-                .standardizedFileURL
-        }
-
-        let expandedPath = NSString(string: root).expandingTildeInPath
-        if expandedPath.hasPrefix("/") {
-            return URL(fileURLWithPath: expandedPath, isDirectory: true).standardizedFileURL
-        }
-
-        return URL(
-            fileURLWithPath: expandedPath,
-            relativeTo: URL(fileURLWithPath: fileManager.currentDirectoryPath, isDirectory: true)
-        ).standardizedFileURL
-    }
-
-    private func renderJSON(_ index: ProjectIndex) throws -> String {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        encoder.dateEncodingStrategy = .iso8601
-        return String(decoding: try encoder.encode(index), as: UTF8.self)
-    }
-
-    private func renderTable(for projects: [ProjectRecord]) -> String {
-        let rows = projects.map { project in
-            ScanTableRow(
-                name: project.name,
-                type: project.detectedTypes.map(\.rawValue).joined(separator: ","),
-                modified: iso8601String(from: project.lastModifiedAt)
-            )
-        }
-
-        let nameWidth = max("NAME".count, rows.map(\.name.count).max() ?? 0)
-        let typeWidth = max("TYPE".count, rows.map(\.type.count).max() ?? 0)
-
-        var lines = [
-            pad("NAME", to: nameWidth) + "  " + pad("TYPE", to: typeWidth) + "  MODIFIED",
-        ]
-
-        lines.append(contentsOf: rows.map { row in
-            pad(row.name, to: nameWidth) + "  " + pad(row.type, to: typeWidth) + "  " + row.modified
-        })
-
-        return lines.joined(separator: "\n")
-    }
-
-    private func iso8601String(from date: Date) -> String {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
-        return formatter.string(from: date)
-    }
-
-    private func pad(_ value: String, to width: Int) -> String {
-        let paddingCount = max(0, width - value.count)
-        guard paddingCount > 0 else {
-            return value
-        }
-
-        return value + String(repeating: " ", count: paddingCount)
-    }
-}
-
-private struct ScanTableRow {
-    let name: String
-    let type: String
-    let modified: String
 }

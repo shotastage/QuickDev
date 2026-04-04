@@ -18,6 +18,7 @@ import ArgumentParser
                 version: "0.0.1",
                 subcommands: [
                     ScanCommand.self,
+                    ListCommand.self,
                 ],
                 defaultSubcommand: ScanCommand.self
             )

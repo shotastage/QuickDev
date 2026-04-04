@@ -24,6 +24,7 @@ QuickDev is early-stage. The current release includes:
 
 - A macOS CLI exposed as `qd`
 - Read-only project scanning with `scan`
+- Cached index inspection with `list`
 - Project type detection for common development stacks
 - Git repository inspection for origin URL and dirty-state metadata
 - JSON index persistence to a local cache directory
@@ -148,6 +149,26 @@ qd scan --force
 
 The current implementation always performs a scan; `--force` exists to make scan intent explicit and to support future cache-aware behavior.
 
+### List the current index without rescanning
+
+```bash
+qd list
+```
+
+`qd list` reads the saved index immediately when one is available. If no compatible index exists yet, it performs a scan, saves the result, and then prints it.
+
+To require a cached index for a specific root and rescan only when needed:
+
+```bash
+qd list --root ~/Work
+```
+
+For machine-readable output:
+
+```bash
+qd list --json
+```
+
 ## Index Storage
 
 QuickDev persists scan output locally so other commands can build on a stable project index.
@@ -202,6 +223,15 @@ Options:
 
 Because `scan` is currently the default subcommand, invoking `qd` with no subcommand will run the same workflow.
 
+### `qd list`
+
+Display the saved project index without rescanning when possible.
+
+Options:
+
+- `--root <path>`: Require the saved index to match this root. If it does not exist yet, QuickDev scans this root and saves a fresh index.
+- `--json`: Print the complete index as JSON instead of a summary table.
+
 ## Architecture
 
 The repository is organized as a Swift Package with three primary targets:
@@ -216,9 +246,11 @@ High-level structure:
 Sources/
 ├── CLI/
 │   ├── Commands/
+│   │   ├── ListCommand.swift
 │   │   └── ScanCommand.swift
 │   ├── MainCLI.swift
 │   ├── CommandProcedure.swift
+│   ├── ProjectIndexCommandSupport.swift
 │   └── Shell.swift
 ├── QuickDev/
 │   ├── GitInspector.swift
@@ -262,7 +294,6 @@ The current codebase implements scanning and indexing. The following capabilitie
 
 ### Core lifecycle commands
 
-- `list` to inspect indexed projects
 - `archive` to create recoverable project archives
 - `restore` to restore archived projects
 - `trash` to move projects into a protected deletion workflow
