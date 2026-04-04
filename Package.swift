@@ -11,6 +11,10 @@ let package = Package(
             name: "QuickDev",
             targets: ["QuickDev"]
         ),
+        .library(
+            name: "SwiftCLIKit",
+            targets: ["SwiftCLIKit"]
+        ),
         .executable(
             name: "CLI",
             targets: ["CLI"]
@@ -28,6 +32,9 @@ let package = Package(
         .target(
             name: "QuickDev"
         ),
+        .target(
+            name: "SwiftCLIKit"
+        ),
         .executableTarget(
             name: "CLI",
             dependencies: [
@@ -38,7 +45,7 @@ let package = Package(
         ),
         .testTarget(
             name: "QuickDevTests",
-            dependencies: ["QuickDev"]
+            dependencies: ["QuickDev", "SwiftCLIKit"]
         ),
     ],
     swiftLanguageModes: [.v6]
