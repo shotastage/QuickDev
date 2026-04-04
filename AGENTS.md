@@ -34,6 +34,10 @@ After changing CLI parsing, subcommand registration, or shell execution, run bot
 
 - Keep changes focused and avoid unrelated refactors.
 - Follow the existing Swift style and keep public APIs stable unless the task requires a breaking change.
+- Write comments in standard Xcode-friendly Swift style so another developer can quickly read and modify the code.
+- Use Swift documentation comments such as `///`, `- Parameters:`, `- Returns:`, and `- Throws:` for public APIs and for internal helpers whose behavior is not immediately obvious.
+- Use `// MARK:` to separate major sections in larger types when it improves navigation in Xcode.
+- Keep comments explanatory rather than redundant; document intent, constraints, side effects, and error conditions instead of restating the code line by line.
 - Register every new `ParsableCommand` in `MainCLI.configuration.subcommands`.
 - Prefer small, testable helpers over putting all logic directly in `ParsableCommand.run()`.
 - Preserve platform guards around CLI entry points so the package still builds on unsupported platforms.
