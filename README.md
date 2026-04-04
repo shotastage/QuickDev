@@ -1,8 +1,22 @@
 # QuickDev
 
-QuickDev is a macOS-first command-line tool for scanning and indexing local development projects under a single workspace root such as `~/Developer`.
+QuickDev is an Apple Silicon macOS command-line tool for scanning and indexing local development projects under a single workspace root such as `~/Developer`.
 
 The installed CLI command is `qd`. Today, QuickDev focuses on fast, read-only project discovery and metadata indexing. The longer-term goal is to help developers manage the full lifecycle of local projects: active work, archival, safe deletion, and eventual cleanup.
+
+## Install
+
+Build and install `qd` from source on an Apple Silicon Mac with a single command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shotastage/QuickDev/main/Tools/installer.sh | bash
+```
+
+The installer downloads the QuickDev source from GitHub, builds it locally with Swift, and installs `qd` to `$HOME/.local/bin` by default.
+
+For version-pinned installs and custom install directories, see the Installation section below.
+
+QuickDev currently supports Apple Silicon Macs only.
 
 ## Why QuickDev?
 
@@ -22,7 +36,7 @@ QuickDev starts by turning a loose directory tree into structured project metada
 
 QuickDev is early-stage. The current release includes:
 
-- A macOS CLI exposed as `qd`
+- An Apple Silicon macOS CLI exposed as `qd`
 - Read-only project scanning with `scan`
 - Cached index inspection with `list`
 - Project type detection for common development stacks
@@ -74,6 +88,28 @@ The current scanner looks up to two directory levels below the selected root. Th
 
 ## Installation
 
+### One-line install
+
+Build and install `qd` from source with a single command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shotastage/QuickDev/main/Tools/installer.sh | bash
+```
+
+The installer downloads the QuickDev source from GitHub, builds `qd` locally with Swift, and installs it to `$HOME/.local/bin` by default.
+
+Install a specific release tag:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shotastage/QuickDev/main/Tools/installer.sh | bash -s -- --version v0.0.1
+```
+
+Install to a custom directory:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/shotastage/QuickDev/main/Tools/installer.sh | bash -s -- --install-dir "$HOME/.local/bin"
+```
+
 ### Run from source
 
 ```bash
@@ -85,7 +121,7 @@ swift run CLI scan
 
 ```bash
 swift build -c release --product CLI
-cp .build/release/CLI /usr/local/bin/qd
+cp .build/release/CLI "$HOME/.local/bin/qd"
 ```
 
 ### Build a distributable archive
@@ -140,14 +176,6 @@ Relative paths are resolved against the current working directory.
 ```bash
 qd scan --json
 ```
-
-### Force a full scan
-
-```bash
-qd scan --force
-```
-
-The current implementation always performs a scan; `--force` exists to make scan intent explicit and to support future cache-aware behavior.
 
 ### List the current index without rescanning
 
@@ -219,7 +247,6 @@ Options:
 
 - `--root <path>`: Root directory to scan. Defaults to `~/Developer`.
 - `--json`: Print the complete index as JSON instead of a summary table.
-- `--force`: Ignore future cache optimizations and perform a full scan.
 
 Because `scan` is currently the default subcommand, invoking `qd` with no subcommand will run the same workflow.
 
@@ -249,7 +276,6 @@ Sources/
 │   │   ├── ListCommand.swift
 │   │   └── ScanCommand.swift
 │   ├── MainCLI.swift
-│   ├── CommandProcedure.swift
 │   ├── ProjectIndexCommandSupport.swift
 │   └── Shell.swift
 ├── QuickDev/

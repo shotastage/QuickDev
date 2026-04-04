@@ -20,9 +20,6 @@ struct ScanCommand: ParsableCommand {
     @Flag(name: .long, help: "Print the full project index as JSON.")
     var json: Bool = false
 
-    @Flag(name: .long, help: "Ignore any existing cache and perform a full scan.")
-    var force: Bool = false
-
     mutating func run() throws {
         let fileManager = FileManager.default
         let support = ProjectIndexCommandSupport(fileManager: fileManager)
@@ -41,10 +38,6 @@ struct ScanCommand: ParsableCommand {
         print("Scanned root: \(rootURL.path)")
         print("Projects found: \(index.projects.count)")
         print("Saved index: \(saveResult.indexFileURL.path)")
-
-        if force {
-            print("Scan mode: full")
-        }
 
         guard index.projects.isEmpty == false else {
             return

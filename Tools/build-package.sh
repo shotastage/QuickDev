@@ -86,6 +86,16 @@ require_command swift
 require_command tar
 require_command shasum
 
+if [[ "$(uname -s)" != "Darwin" ]]; then
+	echo "QuickDev packaging currently supports Apple Silicon macOS only." >&2
+	exit 1
+fi
+
+if [[ "$(uname -m)" != "arm64" ]]; then
+	echo "QuickDev packaging currently supports Apple Silicon Macs only. Detected architecture: $(uname -m)" >&2
+	exit 1
+fi
+
 PACKAGE_VERSION="${PACKAGE_VERSION:-$(extract_version)}"
 PLATFORM="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
@@ -137,7 +147,7 @@ QuickDev CLI ${PACKAGE_VERSION}
 
 Contents:
   bin/${COMMAND_NAME}    QuickDev executable
-  install.sh            Installer for /usr/local/bin or ~/.local/bin
+	install.sh            Installer for ~/.local/bin by default
 
 Quick start:
   1. Extract the archive.
@@ -145,42 +155,7 @@ Quick start:
   3. Verify installation with: ${COMMAND_NAME} --help
 EOF
 
-cat >"${STAGING_DIR}/install.sh" <<'EOF'
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE_BINARY="${SCRIPT_DIR}/bin/qd"
-DEFAULT_PREFIX="/usr/local/bin"
-FALLBACK_PREFIX="${HOME}/.local/bin"
-
-if [[ ! -x "${SOURCE_BINARY}" ]]; then
-	echo "Binary not found: ${SOURCE_BINARY}" >&2
-	exit 1
-fi
-
-if [[ -w "${DEFAULT_PREFIX}" ]] || [[ ! -e "${DEFAULT_PREFIX}" && -w "$(dirname "${DEFAULT_PREFIX}")" ]]; then
-	TARGET_DIR="${DEFAULT_PREFIX}"
-else
-	TARGET_DIR="${FALLBACK_PREFIX}"
-fi
-
-mkdir -p "${TARGET_DIR}"
-install -m 755 "${SOURCE_BINARY}" "${TARGET_DIR}/qd"
-
-echo "Installed qd to ${TARGET_DIR}/qd"
-
-case ":${PATH}:" in
-	*":${TARGET_DIR}:"*) ;;
-	*)
-		echo "${TARGET_DIR} is not on PATH. Add this line to your shell profile:" >&2
-		echo "  export PATH=\"${TARGET_DIR}:\$PATH\"" >&2
-		;;
-esac
-EOF
-
-chmod +x "${STAGING_DIR}/install.sh"
+install -m 755 "${REPO_ROOT}/Tools/installer.sh" "${STAGING_DIR}/install.sh"
 
 echo "==> Creating archive"
 rm -f "${ARCHIVE_PATH}" "${CHECKSUM_PATH}"
