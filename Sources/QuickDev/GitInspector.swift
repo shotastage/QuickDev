@@ -1,3 +1,9 @@
+//
+//  GitInspector.swift
+//
+//  Created by Shota Shimazu on 2026/04/03.
+//
+
 import Foundation
 
 struct GitInspectionResult: Equatable, Sendable {

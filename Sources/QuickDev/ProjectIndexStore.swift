@@ -1,3 +1,8 @@
+//
+//  ProjectIndexStore.swift
+//  Created by Shota Shimazu on 2026/04/03.
+//
+
 import Foundation
 
 public struct ProjectScanState: Codable, Equatable, Sendable {

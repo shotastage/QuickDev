@@ -1,3 +1,9 @@
+//
+//  ProjectClassifier.swift
+//
+//  Created by Shota Shimazu on 2026/04/03.
+//
+
 import Foundation
 
 struct ProjectClassification: Equatable {
