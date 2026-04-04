@@ -5,17 +5,19 @@
 QuickDev is a Swift Package Manager repository with two main targets:
 
 - `QuickDev`: library target under `Sources/QuickDev`
+- `SwiftCLIKit`: shared CLI support library target
 - `CLI`: executable target under `Sources/CLI`, exposed as the `qd` command
 
 The CLI is intended for macOS. `MainCLI.swift` uses a macOS-only entry point and a non-macOS fallback that must continue to compile cleanly.
 
 ## Repository Layout
 
-- `Package.swift`: package manifest, Swift 6.3, `swift-argument-parser` dependency
+- `Package.swift`: package manifest, Swift 6.3, `swift-argument-parser` and `Rainbow` dependencies
 - `Sources/CLI/MainCLI.swift`: top-level `ParsableCommand` and subcommand registration
 - `Sources/CLI/Commands/`: individual CLI subcommands
 - `Sources/CLI/Shell.swift`: process execution helpers
 - `Sources/CLI/CommandProcedure.swift`: shared command procedure protocols
+- `Sources/SwiftCLIKit/`: reusable CLI presentation and support utilities
 - `Sources/QuickDev/QuickDev.swift`: library surface
 - `Tests/QuickDevTests/`: Swift Testing test suite
 
@@ -51,6 +53,8 @@ After changing CLI parsing, subcommand registration, or shell execution, run bot
 - Give every command a clear `abstract` string so `swift run CLI --help` remains useful.
 - Register every command in `MainCLI.configuration.subcommands` and only change `defaultSubcommand` when the task explicitly requires a new default flow.
 - Prefer explicit `@Argument`, `@Option`, and `@Flag` definitions over manually parsing raw argument arrays.
+- Use `Rainbow` for intentional CLI styling when colored output improves readability, such as success, warning, error, or progress messaging.
+- Keep `Rainbow` usage consistent and restrained; do not rely on color alone to communicate critical meaning, and avoid decorative coloring that makes logs harder to scan.
 - When a command uses external tooling, inspect `ShellResult.status`, `stdout`, and `stderr` and surface actionable failures instead of swallowing errors.
 - Avoid placeholder-style failure messages; print or throw errors that explain which executable failed and why.
 - Keep command output deterministic when practical so help text, tests, and CLI behavior are easy to verify.
