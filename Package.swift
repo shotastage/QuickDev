@@ -20,7 +20,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.7.1"),
-
+        .package(url: "https://github.com/onevcat/Rainbow", .upToNextMajor(from: "4.2.1"))
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -32,6 +32,8 @@ let package = Package(
             name: "CLI",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "Rainbow", package: "Rainbow"),
+                "QuickDev"
             ]
         ),
         .testTarget(
