@@ -17,9 +17,9 @@ import ArgumentParser
                 abstract: "QuickDev is a tool to quickly create and manage development packages.",
                 version: "0.0.1",
                 subcommands: [
-                    Dummy.self,
+                    ScanCommand.self,
                 ],
-                defaultSubcommand: Dummy.self
+                defaultSubcommand: ScanCommand.self
             )
         }()
     }
