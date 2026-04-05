@@ -32,7 +32,7 @@ struct SelfUpdateCommand: ParsableCommand {
     var yes: Bool = false
 
     mutating func run() throws {
-        let currentVersion = MainCLI.configuration.version
+        let currentVersion = quickDevCLIVersion
 
         if check {
             try runCheck(currentVersion: currentVersion)

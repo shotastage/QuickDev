@@ -30,7 +30,7 @@ import ArgumentParser
     @main
     enum MainCLI {
         static func main() {
-            print("This tool is only supported on macOS.")
+            print("unsupported platform: qd is currently supported only on macOS.")
         }
     }
 
