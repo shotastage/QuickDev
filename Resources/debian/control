@@ -1,0 +1,15 @@
+Source: quickdev
+Section: utils
+Priority: optional
+Maintainer: Shota Shimazu <shota.shimazu@mgq.app>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/shotastage/QuickDev
+
+Package: quickdev
+Architecture: amd64 arm64
+Depends: ${misc:Depends}
+Description: QuickDev CLI for local project discovery and indexing
+ QuickDev scans local development directories, classifies project types,
+ and stores deterministic metadata for later lifecycle operations.

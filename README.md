@@ -1,6 +1,6 @@
 # QuickDev
 
-QuickDev is an Apple Silicon macOS command-line tool for scanning and indexing local development projects under a single workspace root such as `~/Developer`.
+QuickDev is an macOS command-line tool for scanning and indexing local development projects under a single workspace root such as `~/Developer`.
 
 The installed CLI command is `qd`. Today, QuickDev focuses on fast, read-only project discovery and metadata indexing. The longer-term goal is to help developers manage the full lifecycle of local projects: active work, archival, safe deletion, and eventual cleanup.
 
@@ -119,6 +119,16 @@ The repository includes a packaging script that builds the release binary, runs 
 ```
 
 Artifacts are written to `./dist`.
+
+### Packaging templates
+
+Packaging metadata templates are available under `Resources/`:
+
+- `Resources/homebrew/quickdev.rb` for Homebrew formula publishing
+- `Resources/debian/` for Debian (`deb`) package metadata scaffolding
+- `Resources/rpm/quickdev.spec` for RPM package metadata scaffolding
+
+See `Resources/README.md` for update steps.
 
 ## Usage
 
