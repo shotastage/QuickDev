@@ -41,7 +41,14 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Rainbow", package: "Rainbow"),
                 "QuickDev"
+            ],
+            plugins: [
+                .plugin(name: "CLIVersionPlugin")
             ]
+        ),
+        .plugin(
+            name: "CLIVersionPlugin",
+            capability: .buildTool()
         ),
         .testTarget(
             name: "QuickDevTests",

@@ -14,7 +14,7 @@ import ArgumentParser
             CommandConfiguration(
                 commandName: "qd",
                 abstract: "QuickDev is a tool to quickly create and manage development packages.",
-                version: "0.0.1",
+                version: quickDevCLIVersion,
                 subcommands: [
                     ScanCommand.self,
                     ListCommand.self,
