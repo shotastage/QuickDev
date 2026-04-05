@@ -30,11 +30,18 @@ The current codebase implements scanning and indexing. The following capabilitie
 - More detailed Git summaries
 - Better reporting for large workspace roots
 
+## Platform strategy
+
+- Linux support is planned for a future phase after the macOS workflow matures.
+- Initial Linux support will focus on packaging and CLI compatibility (`deb` and `rpm`).
+- Native Windows support is not planned.
+- On Windows, the recommended path is to use QuickDev through Linux on WSL.
+
 ## Non-goals for now
 
 QuickDev is intentionally focused. These are out of scope for the near term:
 
 - Cloud backup
 - Remote synchronization
-- Cross-platform support beyond macOS
+- Native Windows support
 - A GUI application
