@@ -168,6 +168,42 @@ find_first_directory() {
 	find "${search_root}" -mindepth 1 -maxdepth 1 -type d | head -n 1
 }
 
+normalize_version() {
+	local version_value="$1"
+
+	version_value="${version_value#v}"
+	printf '%s\n' "${version_value}"
+}
+
+validate_source_version() {
+	local source_dir="$1"
+	local version_file
+	local source_version
+	local requested_version
+
+	version_file="${source_dir}/VERSION"
+	if [[ ! -f "${version_file}" ]]; then
+		fail "VERSION file not found in downloaded source."
+	fi
+
+	source_version="$(tr -d '[:space:]' < "${version_file}")"
+	if [[ -z "${source_version}" ]]; then
+		fail "VERSION file is empty in downloaded source."
+	fi
+
+	if [[ "${VERSION_REQUEST}" == "latest" ]]; then
+		log "Resolved source version: ${source_version}"
+		return
+	fi
+
+	requested_version="$(normalize_version "${VERSION_REQUEST}")"
+	if [[ "$(normalize_version "${source_version}")" != "${requested_version}" ]]; then
+		fail "Requested version ${VERSION_REQUEST} does not match source VERSION ${source_version}."
+	fi
+
+	log "Resolved source version: ${source_version}"
+}
+
 download_source_archive() {
 	local destination="$1"
 	local source_url
@@ -222,6 +258,8 @@ install_from_source() {
 	if [[ -z "${source_dir}" ]]; then
 		fail "Source archive extraction failed."
 	fi
+
+	validate_source_version "${source_dir}"
 
 	log "Building QuickDev from source"
 	(
