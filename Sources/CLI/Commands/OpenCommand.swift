@@ -75,6 +75,11 @@ struct OpenCommand: ParsableCommand {
         }
 
         let rootURL = requestedRootURL ?? support.defaultRootURL
+        fputs(
+            "Error: No cached index found for root '\(rootURL.path)'. Running `qd scan` automatically...\n",
+            stderr
+        )
+
         let scanner = ProjectScanner(fileManager: fileManager)
         let index = try scanner.scan(rootURL: rootURL)
         _ = try store.save(index)
