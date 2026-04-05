@@ -155,7 +155,11 @@ struct SelfUpdateCommand: ParsableCommand {
         }
 
         print("Running installer...")
-        let installResult = try Shell.run("bash", arguments: [scriptPath.path] + installerArguments)
+        let installResult = try Shell.run(
+            "bash",
+            arguments: [scriptPath.path] + installerArguments,
+            environment: installerEnvironment
+        )
 
         if installResult.stdout.isEmpty == false {
             print(installResult.stdout, terminator: "")
@@ -173,6 +177,17 @@ struct SelfUpdateCommand: ParsableCommand {
 
     private var installerScriptURL: URL {
         URL(string: "https://raw.githubusercontent.com/\(repo)/\(branch)/Tools/installer.sh")!
+    }
+
+    /// Ensures installer invocations always receive a usable home directory.
+    private var installerEnvironment: [String: String] {
+        var environment = ProcessInfo.processInfo.environment
+
+        if environment["HOME"]?.isEmpty ?? true {
+            environment["HOME"] = NSHomeDirectory()
+        }
+
+        return environment
     }
 
     private var remoteVersionFileURLs: [URL] {

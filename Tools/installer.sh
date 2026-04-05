@@ -89,13 +89,31 @@ path_contains() {
 	esac
 }
 
+resolve_home_dir() {
+	local home_dir="${HOME:-}"
+
+	if [[ -n "${home_dir}" ]]; then
+		printf '%s\n' "${home_dir}"
+		return
+	fi
+
+	if home_dir="$(cd ~ >/dev/null 2>&1 && pwd)"; then
+		if [[ -n "${home_dir}" ]]; then
+			printf '%s\n' "${home_dir}"
+			return
+		fi
+	fi
+
+	fail "HOME is not set. Set HOME or pass --install-dir."
+}
+
 default_install_dir() {
 	if [[ -n "${INSTALL_DIR_OVERRIDE}" ]]; then
 		printf '%s\n' "${INSTALL_DIR_OVERRIDE}"
 		return
 	fi
 
-	printf '%s\n' "${HOME}/.local/bin"
+	printf '%s\n' "$(resolve_home_dir)/.local/bin"
 }
 
 install_binary() {
@@ -324,4 +342,3 @@ if [[ -n "${LOCAL_BINARY}" && -x "${LOCAL_BINARY}" ]]; then
 fi
 
 install_from_source "${TARGET_DIR}"
-

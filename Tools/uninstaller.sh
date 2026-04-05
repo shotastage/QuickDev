@@ -43,6 +43,24 @@ fail() {
 	exit 1
 }
 
+resolve_home_dir() {
+	local home_dir="${HOME:-}"
+
+	if [[ -n "${home_dir}" ]]; then
+		printf '%s\n' "${home_dir}"
+		return
+	fi
+
+	if home_dir="$(cd ~ >/dev/null 2>&1 && pwd)"; then
+		if [[ -n "${home_dir}" ]]; then
+			printf '%s\n' "${home_dir}"
+			return
+		fi
+	fi
+
+	fail "HOME is not set. Set HOME or pass --install-dir."
+}
+
 remove_with_fallback() {
 	local path="$1"
 
@@ -72,7 +90,7 @@ default_install_dir() {
 		return
 	fi
 
-	printf '%s\n' "${HOME}/.local/bin"
+	printf '%s\n' "$(resolve_home_dir)/.local/bin"
 }
 
 find_qd_on_path() {
