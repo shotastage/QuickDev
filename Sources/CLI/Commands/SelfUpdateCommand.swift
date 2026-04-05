@@ -75,10 +75,7 @@ struct SelfUpdateCommand: ParsableCommand {
             print("Remote version: unavailable")
             print("Version comparison unavailable: could not read VERSION from source.")
         }
-        print("Update source is reachable.")
-        print("Repository: \(repo)")
-        print("Requested version: \(targetVersion)")
-        print("Requested branch: \(branch)")
+
         if let installDir {
             print("Install dir override: \(installDir)")
         }
