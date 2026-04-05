@@ -44,6 +44,7 @@ QuickDev is early-stage. The current release includes:
 - An Apple Silicon macOS CLI exposed as `qd`
 - Read-only project scanning with `scan`
 - Cached index inspection with `list`
+- Visual Studio Code launch from indexed names with `open`
 - Project type detection for common development stacks
 - Git repository inspection for origin URL and dirty-state metadata
 - JSON index persistence to a local cache directory
@@ -144,6 +145,18 @@ If you are running from source instead of an installed binary:
 
 ```bash
 swift run CLI scan
+```
+
+### Open a scanned project in Visual Studio Code
+
+```bash
+qd open Wonderway
+```
+
+When needed, resolve names against a specific root:
+
+```bash
+qd open Wonderway --root ~/Developer
 ```
 
 ## Development
