@@ -142,6 +142,18 @@ import Testing
     }
 }
 
+@Test func projectTypeDisplayNamesAreHumanReadable() {
+    #expect(ProjectType.swiftPackage.displayName == "Swift")
+    #expect(ProjectType.nodePackage.displayName == "Node")
+    #expect(ProjectType.goModule.displayName == "Go")
+    #expect(ProjectType.rustCrate.displayName == "Rust")
+    #expect(ProjectType.javaGradle.displayName == "Gradle")
+    #expect(ProjectType.javaMaven.displayName == "Maven")
+    #expect(ProjectType.xcodeProject.displayName == "Xcode")
+    #expect(ProjectType.gitRepository.displayName == "Git")
+    #expect(ProjectType.unknown.displayName == "Unknown")
+}
+
 private struct StubGitInspector: GitInspecting {
     let resultsByPath: [String: GitInspectionResult]
 

@@ -9,9 +9,11 @@ import QuickDev
 
 struct ProjectIndexCommandSupport {
     private let fileManager: FileManager
+    private let now: () -> Date
 
-    init(fileManager: FileManager = .default) {
+    init(fileManager: FileManager = .default, now: @escaping () -> Date = Date.init) {
         self.fileManager = fileManager
+        self.now = now
     }
 
     var defaultRootURL: URL {
@@ -47,8 +49,8 @@ struct ProjectIndexCommandSupport {
         let rows = projects.map { project in
             ProjectIndexTableRow(
                 name: project.name,
-                type: project.detectedTypes.map(\.rawValue).joined(separator: ","),
-                modified: iso8601String(from: project.lastModifiedAt)
+                type: project.detectedTypes.map(\.displayName).joined(separator: ","),
+                modified: relativeTimeString(from: project.lastModifiedAt)
             )
         }
 
@@ -70,6 +72,34 @@ struct ProjectIndexCommandSupport {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
         return formatter.string(from: date)
+    }
+
+    func relativeTimeString(from date: Date) -> String {
+        let interval = date.timeIntervalSince(now())
+        let isFuture = interval > 0
+        let absoluteSeconds = Int(abs(interval))
+
+        guard absoluteSeconds >= 60 else {
+            return "just now"
+        }
+
+        let valueAndUnit: (Int, String)
+        switch absoluteSeconds {
+        case 31_536_000...:
+            valueAndUnit = (absoluteSeconds / 31_536_000, "year")
+        case 2_592_000...:
+            valueAndUnit = (absoluteSeconds / 2_592_000, "month")
+        case 86_400...:
+            valueAndUnit = (absoluteSeconds / 86_400, "day")
+        case 3_600...:
+            valueAndUnit = (absoluteSeconds / 3_600, "hour")
+        default:
+            valueAndUnit = (absoluteSeconds / 60, "minute")
+        }
+
+        let (value, unit) = valueAndUnit
+        let pluralizedUnit = value == 1 ? unit : unit + "s"
+        return isFuture ? "in \(value) \(pluralizedUnit)" : "\(value) \(pluralizedUnit) ago"
     }
 
     private func pad(_ value: String, to width: Int) -> String {
