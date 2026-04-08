@@ -103,6 +103,18 @@ When a specific command is modified, also run its expected success path and at l
 - Summarize what was AI-generated versus manually authored.
 - Record key verification steps and results.
 - Mention notable limitations or residual risks.
+- For tasks that add/update/delete project files, create one implementation history file in `Docs/Agent-History/`.
+
+Implementation history file requirements:
+
+- File name format: `YYYY-MM-DD_HHMM_<task-slug>.md`
+- Required sections (in this order):
+	1. Added/Changed Files
+	2. Implementation Summary
+	3. Key Functions
+	4. Verification Steps
+	5. Future Extension Points
+- Use `Docs/Agent-History/TEMPLATE.md` as the canonical format.
 
 ## 10. Incident Handling
 
