@@ -52,7 +52,7 @@ let package = Package(
         ),
         .testTarget(
             name: "QuickDevTests",
-            dependencies: ["QuickDev", "SwiftCLIKit"]
+            dependencies: ["QuickDev", "SwiftCLIKit", "CLI"]
         ),
     ],
     swiftLanguageModes: [.v6]

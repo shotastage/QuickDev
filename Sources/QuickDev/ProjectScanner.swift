@@ -12,6 +12,31 @@ public enum ProjectType: String, Codable, Sendable {
     case unknown
 }
 
+public extension ProjectType {
+    var displayName: String {
+        switch self {
+        case .swiftPackage:
+            return "Swift"
+        case .nodePackage:
+            return "Node"
+        case .goModule:
+            return "Go"
+        case .rustCrate:
+            return "Rust"
+        case .javaGradle:
+            return "Gradle"
+        case .javaMaven:
+            return "Maven"
+        case .xcodeProject:
+            return "Xcode"
+        case .gitRepository:
+            return "Git"
+        case .unknown:
+            return "Unknown"
+        }
+    }
+}
+
 public enum ProjectStatus: String, Codable, Sendable {
     case active
     case archived

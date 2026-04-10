@@ -5,6 +5,7 @@ This index provides entry points for detailed project documentation that is inte
 ## Product and Project Policies
 
 - [AI and Agent Utilization Policy](AI-Agent-Policy.md)
+- [Agent Implementation History](Agent-History/README.md)
 
 ## User and CLI Guides
 

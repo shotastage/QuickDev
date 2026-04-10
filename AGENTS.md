@@ -44,6 +44,33 @@ After changing CLI parsing, subcommand registration, or shell execution, run bot
 - Prefer small, testable helpers over putting all logic directly in `ParsableCommand.run()`.
 - Preserve platform guards around CLI entry points so the package still builds on unsupported platforms.
 
+## Implementation History Output Rules
+
+When an agent completes a task that adds, updates, or deletes project files, it must also create one implementation history file.
+
+- History location: `Docs/Agent-History/`
+- File naming: `YYYY-MM-DD_HHMM_<task-slug>.md` (24-hour local time, ASCII, lowercase kebab-case slug)
+- One task, one history file. Do not append unrelated tasks to an older file.
+- If no file was changed, history output is optional. If required by the task, create a record and write `N/A` for non-applicable sections.
+
+Each history file must include all sections below in this order:
+
+1. Added/Changed Files
+2. Implementation Summary
+3. Key Functions
+4. Verification Steps
+5. Future Extension Points
+
+Section requirements:
+
+- Added/Changed Files: list every added/modified/deleted file with a short reason.
+- Implementation Summary: concise explanation of what was implemented and why.
+- Key Functions: explain major functions, methods, or command flows added/changed.
+- Verification Steps: exact commands and expected outcomes used for validation.
+- Future Extension Points: realistic follow-up ideas and where they would fit in the codebase.
+
+Use `Docs/Agent-History/TEMPLATE.md` as the canonical format.
+
 ## Adding CLI Commands
 
 - Add each new command as its own file under `Sources/CLI/Commands/`.
@@ -52,6 +79,7 @@ After changing CLI parsing, subcommand registration, or shell execution, run bot
 - Move reusable or stateful behavior into helpers or procedure types instead of growing `run()` bodies.
 - Give every command a clear `abstract` string so `swift run CLI --help` remains useful.
 - Register every command in `MainCLI.configuration.subcommands` and only change `defaultSubcommand` when the task explicitly requires a new default flow.
+- When adding a command to AGENT behavior, also update the newest version section in `CHANGELOG.md` with the command details.
 - Prefer explicit `@Argument`, `@Option`, and `@Flag` definitions over manually parsing raw argument arrays.
 - Use `Rainbow` for intentional CLI styling when colored output improves readability, such as success, warning, error, or progress messaging.
 - Keep `Rainbow` usage consistent and restrained; do not rely on color alone to communicate critical meaning, and avoid decorative coloring that makes logs harder to scan.

@@ -18,6 +18,7 @@ import ArgumentParser
                 subcommands: [
                     ScanCommand.self,
                     ListCommand.self,
+                    CloneCommand.self,
                     OpenCommand.self,
                     SelfUpdateCommand.self,
                 ],

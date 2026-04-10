@@ -69,11 +69,6 @@ struct ListCommand: ParsableCommand {
             return
         }
 
-        print("Indexed root: \(index.rootPath)")
-        print("Scanned at: \(support.iso8601String(from: index.scannedAt))")
-        print("Projects found: \(index.projects.count)")
-        print("Loaded index: \(store.indexFileURL.path)")
-
         guard index.projects.isEmpty == false else {
             return
         }
