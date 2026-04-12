@@ -2,9 +2,9 @@
 
 ## 0.0.5
 
-[ ] Add a `transfer` command to move existing project directories into the `~/Developer/` directory and register them automatically.
+- [x] Add a `transfer` command to validate a directory as a project candidate, ask for `Y/N` confirmation when unclear, move it safely into `~/Developer/`, and refresh the index automatically.
 
-[ ] Add a `archive` command to safely archive and compress project directory.
+- [ ] Add a `archive` command to safely archive and compress project directory.
 
 ## 0.0.4
 

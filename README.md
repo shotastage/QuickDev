@@ -2,7 +2,7 @@
 
 QuickDev is an macOS command-line tool for scanning and indexing local development projects under a single workspace root such as `~/Developer`.
 
-The installed CLI command is `qd`. Today, QuickDev focuses on fast, read-only project discovery and metadata indexing. The longer-term goal is to help developers manage the full lifecycle of local projects: active work, archival, safe deletion, and eventual cleanup.
+The installed CLI command is `qd`. Today, QuickDev focuses on fast project discovery, safe workspace organization, and metadata indexing. The longer-term goal is to help developers manage the full lifecycle of local projects: active work, archival, safe deletion, and eventual cleanup.
 
 ## Install
 
@@ -44,6 +44,7 @@ QuickDev is early-stage. The current release includes:
 - An Apple Silicon macOS CLI exposed as `qd`
 - Read-only project scanning with `scan`
 - Cached index inspection with `list`
+- Safe directory transfer into `~/Developer` with `transfer`
 - Visual Studio Code launch from indexed names with `open`
 - Project type detection for common development stacks
 - Git repository inspection for origin URL and dirty-state metadata
@@ -157,6 +158,12 @@ When needed, resolve names against a specific root:
 
 ```bash
 qd open Wonderway --root ~/Developer
+```
+
+### Transfer an existing directory into `~/Developer`
+
+```bash
+qd transfer ~/Work/Wonderway
 ```
 
 ## Development

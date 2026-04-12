@@ -19,6 +19,7 @@ import ArgumentParser
                     ScanCommand.self,
                     ListCommand.self,
                     CloneCommand.self,
+                    TransferCommand.self,
                     OpenCommand.self,
                     SelfUpdateCommand.self,
                 ],
