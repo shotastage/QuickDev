@@ -7,6 +7,7 @@
 import ArgumentParser
 import Foundation
 import QuickDev
+import SwiftCLIKit
 
 struct TransferCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
@@ -79,17 +80,7 @@ struct TransferCommand: ParsableCommand {
     /// - Returns: `true` when the user confirms transfer should continue.
     private func confirmTransferForNonProject(directoryURL: URL) -> Bool {
         print("Directory '\(directoryURL.path)' does not look like a known project.")
-        print("Transfer anyway to ~/Developer? [y/N]: ", terminator: "")
-
-        while let response = readLine(strippingNewline: true) {
-            if let shouldProceed = TransferCommandSupport.parseTransferConfirmation(response) {
-                return shouldProceed
-            }
-
-            print("Please answer with Y or N: ", terminator: "")
-        }
-
-        return false
+        return ConfirmationPrompt.ask(prompt: "Transfer anyway to ~/Developer? [y/N]: ")
     }
 
     // MARK: - Filesystem Operations
@@ -235,22 +226,6 @@ enum TransferCommandSupport {
         }
 
         return destinationDirectoryURL
-    }
-
-    /// Parses user confirmation input for a `Y/N` prompt.
-    /// - Parameter response: Raw input text entered by the user.
-    /// - Returns: `true` for yes, `false` for no/default, or `nil` for invalid input.
-    static func parseTransferConfirmation(_ response: String) -> Bool? {
-        let normalized = response.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-
-        switch normalized {
-        case "y", "yes":
-            return true
-        case "", "n", "no":
-            return false
-        default:
-            return nil
-        }
     }
 
     /// Converts an absolute path to a `~`-prefixed path when it is inside the home directory.

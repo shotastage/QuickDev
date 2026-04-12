@@ -40,7 +40,8 @@ let package = Package(
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Rainbow", package: "Rainbow"),
-                "QuickDev"
+                "QuickDev",
+                "SwiftCLIKit"
             ],
             plugins: [
                 .plugin(name: "CLIVersionPlugin")

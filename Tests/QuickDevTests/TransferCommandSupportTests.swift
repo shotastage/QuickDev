@@ -2,14 +2,6 @@ import Foundation
 import Testing
 @testable import CLI
 
-@Test func parseTransferConfirmationAcceptsYesNoAndDefaultNo() {
-    #expect(TransferCommandSupport.parseTransferConfirmation("y") == true)
-    #expect(TransferCommandSupport.parseTransferConfirmation("YES") == true)
-    #expect(TransferCommandSupport.parseTransferConfirmation(" n ") == false)
-    #expect(TransferCommandSupport.parseTransferConfirmation("") == false)
-    #expect(TransferCommandSupport.parseTransferConfirmation("maybe") == nil)
-}
-
 @Test func resolveSourceDirectoryURLResolvesRelativePathFromCurrentDirectory() throws {
     try withTemporaryDirectory { temporaryDirectoryURL in
         let currentDirectoryPath = FileManager.default.currentDirectoryPath
