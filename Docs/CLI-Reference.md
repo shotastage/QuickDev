@@ -94,6 +94,23 @@ Directory '/Users/yourname/Work/Notes' does not look like a known project.
 Transfer anyway to ~/Developer? [y/N]:
 ```
 
+### Clone a repository into `~/Developer`
+
+`qd clone` clones a Git repository into `~/Developer` and then refreshes the cached project index so the new project is immediately available to `qd list` and `qd open`.
+
+```bash
+qd clone git@github.com:user/Wonderway.git
+```
+
+Example output:
+
+```text
+Cloned to ~/Developer/Wonderway
+Scanned root: /Users/yourname/Developer
+Projects found: 4
+Saved index: /Users/yourname/.devctl/projects.json
+```
+
 ## Command Reference
 
 ### `qd scan`
@@ -142,3 +159,18 @@ Behavior:
 - If the directory does not look like a project, prompts for `Y/N` confirmation before continuing.
 - Refuses unsafe moves (for example, existing destination collisions or self-descendant move paths).
 - Runs an index refresh after a successful move.
+
+### `qd clone`
+
+Clone a Git repository into `~/Developer` and refresh the cached project index.
+
+Arguments:
+
+- `<repository-url>`: Git repository URL in HTTPS or SSH form.
+
+Behavior:
+
+- Extracts the destination directory name from the repository URL.
+- Refuses to overwrite an existing target directory under `~/Developer`.
+- Runs `git clone` into `~/Developer/<repository-name>`.
+- Runs an index refresh after a successful clone.

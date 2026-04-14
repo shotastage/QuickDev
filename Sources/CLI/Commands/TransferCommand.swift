@@ -52,9 +52,7 @@ struct TransferCommand: ParsableCommand {
                 fileManager: fileManager
             )
 
-            let rootURL = support.defaultRootURL
-            let index = try scanner.scan(rootURL: rootURL)
-            let saveResult = try store.save(index)
+            let refreshResult = try support.refreshIndex(scanner: scanner, store: store)
 
             let sourcePath = TransferCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
             let destinationPath = TransferCommandSupport.displayPath(
@@ -64,9 +62,9 @@ struct TransferCommand: ParsableCommand {
 
             print("Transferred: \(sourcePath)")
             print("Destination: \(destinationPath)")
-            print("Scanned root: \(rootURL.path)")
-            print("Projects found: \(index.projects.count)")
-            print("Saved index: \(saveResult.indexFileURL.path)")
+            print("Scanned root: \(refreshResult.rootURL.path)")
+            print("Projects found: \(refreshResult.index.projects.count)")
+            print("Saved index: \(refreshResult.saveResult.indexFileURL.path)")
         } catch let error as TransferCommandError {
             printFailureMessage(for: error, homeDirectoryURL: homeDirectoryURL)
             throw ExitCode.failure

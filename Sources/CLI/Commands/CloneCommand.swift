@@ -6,11 +6,12 @@
 
 import ArgumentParser
 import Foundation
+import QuickDev
 
 struct CloneCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "clone",
-        abstract: "Clone a Git repository into ~/Developer regardless of the current directory."
+        abstract: "Clone a Git repository into ~/Developer and refresh the project index."
     )
 
     @Argument(help: "Git repository URL (HTTPS or SSH).")
@@ -18,7 +19,10 @@ struct CloneCommand: ParsableCommand {
 
     mutating func run() throws {
         let fileManager = FileManager.default
-        let homeDirectoryURL = fileManager.homeDirectoryForCurrentUser
+        let homeDirectoryURL = fileManager.homeDirectoryForCurrentUser.standardizedFileURL
+        let support = ProjectIndexCommandSupport(fileManager: fileManager)
+        let scanner = ProjectScanner(fileManager: fileManager)
+        let store = ProjectIndexStore(fileManager: fileManager)
 
         do {
             let repositoryName = try CloneCommandSupport.extractRepositoryName(from: repositoryURL)
@@ -29,8 +33,17 @@ struct CloneCommand: ParsableCommand {
             )
 
             try executeClone(repositoryURL: repositoryURL, targetDirectoryURL: targetDirectoryURL)
+            let refreshResult = try refreshProjectIndex(
+                support: support,
+                scanner: scanner,
+                store: store,
+                targetDirectoryURL: targetDirectoryURL
+            )
             let displayPath = CloneCommandSupport.displayPath(targetDirectoryURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Cloned to \(displayPath)")
+            printUserMessage("Scanned root: \(refreshResult.rootURL.path)")
+            printUserMessage("Projects found: \(refreshResult.index.projects.count)")
+            printUserMessage("Saved index: \(refreshResult.saveResult.indexFileURL.path)")
         } catch let error as CloneCommandError {
             printFailureMessage(for: error, homeDirectoryURL: homeDirectoryURL)
             throw ExitCode.failure
@@ -63,6 +76,30 @@ struct CloneCommand: ParsableCommand {
         }
     }
 
+    /// Refreshes the cached project index after a successful clone so the new repository is immediately discoverable.
+    /// - Parameters:
+    ///   - support: Shared command helper for scan root resolution and output rendering.
+    ///   - scanner: Project scanner used to rebuild the index.
+    ///   - store: Project index store that persists the latest scan.
+    ///   - targetDirectoryURL: Newly cloned repository location used for failure reporting.
+    /// - Returns: Saved index metadata for user-facing output.
+    /// - Throws: `CloneCommandError.projectIndexRefreshFailed` when scan or save fails after cloning.
+    private func refreshProjectIndex(
+        support: ProjectIndexCommandSupport,
+        scanner: ProjectScanner,
+        store: ProjectIndexStore,
+        targetDirectoryURL: URL
+    ) throws -> ProjectIndexRefreshResult {
+        do {
+            return try support.refreshIndex(scanner: scanner, store: store)
+        } catch {
+            throw CloneCommandError.projectIndexRefreshFailed(
+                targetDirectoryURL: targetDirectoryURL,
+                details: CloneCommandSupport.describe(error: error)
+            )
+        }
+    }
+
     // MARK: - Messaging
 
     /// Prints user-facing messages to stdout or stderr.
@@ -91,6 +128,10 @@ struct CloneCommand: ParsableCommand {
         case .cloneFailed(let status):
             printUserMessage("Clone failed", isError: true)
             printUserMessage("git exited with status \(status)", isError: true)
+        case .projectIndexRefreshFailed(let targetDirectoryURL, let details):
+            let displayPath = CloneCommandSupport.displayPath(targetDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            printUserMessage("Repository was cloned to \(displayPath), but the project index refresh failed.", isError: true)
+            printUserMessage(details, isError: true)
         }
     }
 }
@@ -183,6 +224,17 @@ enum CloneCommandSupport {
         return standardizedPath
     }
 
+    static func describe(error: Error) -> String {
+        if let localizedError = error as? LocalizedError,
+            let description = localizedError.errorDescription,
+            description.isEmpty == false
+        {
+            return description
+        }
+
+        return error.localizedDescription
+    }
+
     private static func repositoryPathComponent(from repositoryURL: String) -> String? {
         if repositoryURL.contains("://") {
             return URLComponents(string: repositoryURL)?.path
@@ -206,4 +258,5 @@ enum CloneCommandError: Error, Equatable {
     case targetDirectoryAlreadyExists(URL)
     case failedToRunGit
     case cloneFailed(status: Int32)
+    case projectIndexRefreshFailed(targetDirectoryURL: URL, details: String)
 }
