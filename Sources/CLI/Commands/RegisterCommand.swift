@@ -1,5 +1,5 @@
 //
-//  TransferCommand.swift
+//  RegisterCommand.swift
 //
 //  Created by Codex on 2026/04/12.
 //
@@ -9,9 +9,9 @@ import Foundation
 import QuickDev
 import SwiftCLIKit
 
-struct TransferCommand: ParsableCommand {
+struct RegisterCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "transfer",
+        commandName: "register",
         abstract: "Move an existing directory into ~/Developer and refresh the project index."
     )
 
@@ -27,21 +27,21 @@ struct TransferCommand: ParsableCommand {
         let store = ProjectIndexStore(fileManager: fileManager)
 
         do {
-            let sourceDirectoryURL = try TransferCommandSupport.resolveSourceDirectoryURL(
+            let sourceDirectoryURL = try RegisterCommandSupport.resolveSourceDirectoryURL(
                 from: directoryPath,
                 fileManager: fileManager
             )
 
-            let destinationDirectoryURL = try TransferCommandSupport.buildTransferDestinationPath(
+            let destinationDirectoryURL = try RegisterCommandSupport.buildRegisterDestinationPath(
                 for: sourceDirectoryURL,
                 fileManager: fileManager,
                 homeDirectoryURL: homeDirectoryURL
             )
 
             if try classifier.isLikelyProject(directoryURL: sourceDirectoryURL) == false {
-                let shouldContinue = confirmTransferForNonProject(directoryURL: sourceDirectoryURL)
+                let shouldContinue = confirmRegisterForNonProject(directoryURL: sourceDirectoryURL)
                 guard shouldContinue else {
-                    print("Transfer cancelled.")
+                    print("Register cancelled.")
                     return
                 }
             }
@@ -54,18 +54,18 @@ struct TransferCommand: ParsableCommand {
 
             let refreshResult = try support.refreshIndex(scanner: scanner, store: store)
 
-            let sourcePath = TransferCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
-            let destinationPath = TransferCommandSupport.displayPath(
+            let sourcePath = RegisterCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            let destinationPath = RegisterCommandSupport.displayPath(
                 destinationDirectoryURL,
                 homeDirectoryURL: homeDirectoryURL
             )
 
-            print("Transferred: \(sourcePath)")
+            print("Registered: \(sourcePath)")
             print("Destination: \(destinationPath)")
             print("Scanned root: \(refreshResult.rootURL.path)")
             print("Projects found: \(refreshResult.index.projects.count)")
             print("Saved index: \(refreshResult.saveResult.indexFileURL.path)")
-        } catch let error as TransferCommandError {
+        } catch let error as RegisterCommandError {
             printFailureMessage(for: error, homeDirectoryURL: homeDirectoryURL)
             throw ExitCode.failure
         }
@@ -74,11 +74,11 @@ struct TransferCommand: ParsableCommand {
     // MARK: - User Confirmation
 
     /// Prompts the user when a directory does not match known project markers.
-    /// - Parameter directoryURL: Candidate source directory supplied to `transfer`.
-    /// - Returns: `true` when the user confirms transfer should continue.
-    private func confirmTransferForNonProject(directoryURL: URL) -> Bool {
+    /// - Parameter directoryURL: Candidate source directory supplied to `register`.
+    /// - Returns: `true` when the user confirms registration should continue.
+    private func confirmRegisterForNonProject(directoryURL: URL) -> Bool {
         print("Directory '\(directoryURL.path)' does not look like a known project.")
-        return ConfirmationPrompt.ask(prompt: "Transfer anyway to ~/Developer? [y/N]: ")
+        return ConfirmationPrompt.ask(prompt: "Register anyway to ~/Developer? [y/N]: ")
     }
 
     // MARK: - Filesystem Operations
@@ -88,14 +88,14 @@ struct TransferCommand: ParsableCommand {
     ///   - sourceDirectoryURL: Existing directory chosen by the user.
     ///   - destinationDirectoryURL: Target location under `~/Developer`.
     ///   - fileManager: File manager used for filesystem operations.
-    /// - Throws: `TransferCommandError.failedToMoveDirectory` when move fails.
+    /// - Throws: `RegisterCommandError.failedToMoveDirectory` when move fails.
     private func moveDirectory(from sourceDirectoryURL: URL, to destinationDirectoryURL: URL, fileManager: FileManager)
         throws
     {
         do {
             try fileManager.moveItem(at: sourceDirectoryURL, to: destinationDirectoryURL)
         } catch {
-            throw TransferCommandError.failedToMoveDirectory(
+            throw RegisterCommandError.failedToMoveDirectory(
                 source: sourceDirectoryURL,
                 destination: destinationDirectoryURL
             )
@@ -104,31 +104,31 @@ struct TransferCommand: ParsableCommand {
 
     // MARK: - Messaging
 
-    private func printFailureMessage(for error: TransferCommandError, homeDirectoryURL: URL) {
+    private func printFailureMessage(for error: RegisterCommandError, homeDirectoryURL: URL) {
         switch error {
         case .emptyDirectoryPath:
             printUserMessage("Directory path is required.", isError: true)
         case .sourceDirectoryDoesNotExist(let sourceDirectoryURL):
-            let displayPath = TransferCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            let displayPath = RegisterCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Directory does not exist: \(displayPath)", isError: true)
         case .sourcePathIsNotDirectory(let sourceURL):
-            let displayPath = TransferCommandSupport.displayPath(sourceURL, homeDirectoryURL: homeDirectoryURL)
+            let displayPath = RegisterCommandSupport.displayPath(sourceURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Path is not a directory: \(displayPath)", isError: true)
         case .sourceAlreadyInDeveloperRoot(let sourceDirectoryURL):
-            let displayPath = TransferCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            let displayPath = RegisterCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Directory is already inside ~/Developer: \(displayPath)", isError: true)
         case .sourceContainsDestination(let sourceDirectoryURL):
-            let displayPath = TransferCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            let displayPath = RegisterCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Refusing to move \(displayPath) into one of its descendants.", isError: true)
         case .failedToCreateDeveloperDirectory(let developerRootURL):
-            let displayPath = TransferCommandSupport.displayPath(developerRootURL, homeDirectoryURL: homeDirectoryURL)
+            let displayPath = RegisterCommandSupport.displayPath(developerRootURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Failed to create destination root: \(displayPath)", isError: true)
         case .targetDirectoryAlreadyExists(let targetDirectoryURL):
-            let displayPath = TransferCommandSupport.displayPath(targetDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            let displayPath = RegisterCommandSupport.displayPath(targetDirectoryURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Target directory already exists: \(displayPath)", isError: true)
         case .failedToMoveDirectory(let sourceDirectoryURL, let destinationDirectoryURL):
-            let sourcePath = TransferCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
-            let destinationPath = TransferCommandSupport.displayPath(destinationDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            let sourcePath = RegisterCommandSupport.displayPath(sourceDirectoryURL, homeDirectoryURL: homeDirectoryURL)
+            let destinationPath = RegisterCommandSupport.displayPath(destinationDirectoryURL, homeDirectoryURL: homeDirectoryURL)
             printUserMessage("Failed to move \(sourcePath) to \(destinationPath).", isError: true)
         }
     }
@@ -144,17 +144,17 @@ struct TransferCommand: ParsableCommand {
     }
 }
 
-enum TransferCommandSupport {
-    /// Resolves and validates the source directory path supplied to the transfer command.
+enum RegisterCommandSupport {
+    /// Resolves and validates the source directory path supplied to the register command.
     /// - Parameters:
     ///   - directoryPath: User-provided path, absolute, relative, or `~`-expanded.
     ///   - fileManager: File manager used for validation and relative path resolution.
     /// - Returns: Standardized absolute URL of the source directory.
-    /// - Throws: `TransferCommandError.emptyDirectoryPath`, `.sourceDirectoryDoesNotExist`, or `.sourcePathIsNotDirectory`.
+    /// - Throws: `RegisterCommandError.emptyDirectoryPath`, `.sourceDirectoryDoesNotExist`, or `.sourcePathIsNotDirectory`.
     static func resolveSourceDirectoryURL(from directoryPath: String, fileManager: FileManager) throws -> URL {
         let trimmedPath = directoryPath.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmedPath.isEmpty == false else {
-            throw TransferCommandError.emptyDirectoryPath
+            throw RegisterCommandError.emptyDirectoryPath
         }
 
         let expandedPath = NSString(string: trimmedPath).expandingTildeInPath
@@ -173,11 +173,11 @@ enum TransferCommandSupport {
         var isDirectory: ObjCBool = false
 
         guard fileManager.fileExists(atPath: normalizedURL.path, isDirectory: &isDirectory) else {
-            throw TransferCommandError.sourceDirectoryDoesNotExist(normalizedURL)
+            throw RegisterCommandError.sourceDirectoryDoesNotExist(normalizedURL)
         }
 
         guard isDirectory.boolValue else {
-            throw TransferCommandError.sourcePathIsNotDirectory(normalizedURL)
+            throw RegisterCommandError.sourcePathIsNotDirectory(normalizedURL)
         }
 
         return normalizedURL
@@ -185,12 +185,12 @@ enum TransferCommandSupport {
 
     /// Builds a safe destination path under `~/Developer`.
     /// - Parameters:
-    ///   - sourceDirectoryURL: Existing directory to transfer.
+    ///   - sourceDirectoryURL: Existing directory to register.
     ///   - fileManager: File manager used to create and validate destination directories.
     ///   - homeDirectoryURL: Home directory used to derive the `~/Developer` root.
     /// - Returns: Destination directory URL under `~/Developer`.
-    /// - Throws: `TransferCommandError` when source/destination invariants are unsafe.
-    static func buildTransferDestinationPath(for sourceDirectoryURL: URL, fileManager: FileManager, homeDirectoryURL: URL)
+    /// - Throws: `RegisterCommandError` when source/destination invariants are unsafe.
+    static func buildRegisterDestinationPath(for sourceDirectoryURL: URL, fileManager: FileManager, homeDirectoryURL: URL)
         throws -> URL
     {
         let developerRootURL = homeDirectoryURL
@@ -198,13 +198,13 @@ enum TransferCommandSupport {
             .standardizedFileURL
 
         if sourceDirectoryURL.path == developerRootURL.path || sourceDirectoryURL.path.hasPrefix(developerRootURL.path + "/") {
-            throw TransferCommandError.sourceAlreadyInDeveloperRoot(sourceDirectoryURL)
+            throw RegisterCommandError.sourceAlreadyInDeveloperRoot(sourceDirectoryURL)
         }
 
         do {
             try fileManager.createDirectory(at: developerRootURL, withIntermediateDirectories: true)
         } catch {
-            throw TransferCommandError.failedToCreateDeveloperDirectory(developerRootURL)
+            throw RegisterCommandError.failedToCreateDeveloperDirectory(developerRootURL)
         }
 
         let destinationDirectoryURL = developerRootURL
@@ -212,15 +212,15 @@ enum TransferCommandSupport {
             .standardizedFileURL
 
         if destinationDirectoryURL.path == sourceDirectoryURL.path {
-            throw TransferCommandError.sourceAlreadyInDeveloperRoot(sourceDirectoryURL)
+            throw RegisterCommandError.sourceAlreadyInDeveloperRoot(sourceDirectoryURL)
         }
 
         if destinationDirectoryURL.path.hasPrefix(sourceDirectoryURL.path + "/") {
-            throw TransferCommandError.sourceContainsDestination(sourceDirectoryURL)
+            throw RegisterCommandError.sourceContainsDestination(sourceDirectoryURL)
         }
 
         guard fileManager.fileExists(atPath: destinationDirectoryURL.path) == false else {
-            throw TransferCommandError.targetDirectoryAlreadyExists(destinationDirectoryURL)
+            throw RegisterCommandError.targetDirectoryAlreadyExists(destinationDirectoryURL)
         }
 
         return destinationDirectoryURL
@@ -244,7 +244,7 @@ enum TransferCommandSupport {
     }
 }
 
-enum TransferCommandError: Error, Equatable {
+enum RegisterCommandError: Error, Equatable {
     case emptyDirectoryPath
     case sourceDirectoryDoesNotExist(URL)
     case sourcePathIsNotDirectory(URL)

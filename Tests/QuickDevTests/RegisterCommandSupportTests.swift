@@ -17,7 +17,7 @@ import Testing
             .standardizedFileURL
         try createDirectory(at: sourceDirectoryURL)
 
-        let resolvedURL = try TransferCommandSupport.resolveSourceDirectoryURL(
+        let resolvedURL = try RegisterCommandSupport.resolveSourceDirectoryURL(
             from: "SampleProject",
             fileManager: .default
         )
@@ -34,8 +34,8 @@ import Testing
         let expectedPathURL = URL(fileURLWithPath: fileURL.path, isDirectory: true).standardizedFileURL
         try Data("hello".utf8).write(to: fileURL)
 
-        #expect(throws: TransferCommandError.sourcePathIsNotDirectory(expectedPathURL)) {
-            _ = try TransferCommandSupport.resolveSourceDirectoryURL(
+        #expect(throws: RegisterCommandError.sourcePathIsNotDirectory(expectedPathURL)) {
+            _ = try RegisterCommandSupport.resolveSourceDirectoryURL(
                 from: fileURL.path,
                 fileManager: .default
             )
@@ -43,7 +43,7 @@ import Testing
     }
 }
 
-@Test func buildTransferDestinationPathCreatesDeveloperRootAndResolvesTarget() throws {
+@Test func buildRegisterDestinationPathCreatesDeveloperRootAndResolvesTarget() throws {
     try withTemporaryDirectory { temporaryDirectoryURL in
         let homeDirectoryURL = temporaryDirectoryURL
             .appendingPathComponent("home", isDirectory: true)
@@ -56,7 +56,7 @@ import Testing
         try createDirectory(at: homeDirectoryURL)
         try createDirectory(at: sourceDirectoryURL)
 
-        let destinationURL = try TransferCommandSupport.buildTransferDestinationPath(
+        let destinationURL = try RegisterCommandSupport.buildRegisterDestinationPath(
             for: sourceDirectoryURL,
             fileManager: .default,
             homeDirectoryURL: homeDirectoryURL
@@ -77,7 +77,7 @@ import Testing
     }
 }
 
-@Test func buildTransferDestinationPathRejectsDirectoriesAlreadyInDeveloperRoot() throws {
+@Test func buildRegisterDestinationPathRejectsDirectoriesAlreadyInDeveloperRoot() throws {
     try withTemporaryDirectory { temporaryDirectoryURL in
         let homeDirectoryURL = temporaryDirectoryURL
             .appendingPathComponent("home", isDirectory: true)
@@ -89,8 +89,8 @@ import Testing
 
         try createDirectory(at: sourceDirectoryURL)
 
-        #expect(throws: TransferCommandError.sourceAlreadyInDeveloperRoot(sourceDirectoryURL)) {
-            _ = try TransferCommandSupport.buildTransferDestinationPath(
+        #expect(throws: RegisterCommandError.sourceAlreadyInDeveloperRoot(sourceDirectoryURL)) {
+            _ = try RegisterCommandSupport.buildRegisterDestinationPath(
                 for: sourceDirectoryURL,
                 fileManager: .default,
                 homeDirectoryURL: homeDirectoryURL
@@ -99,7 +99,7 @@ import Testing
     }
 }
 
-@Test func buildTransferDestinationPathRejectsExistingTargetDirectory() throws {
+@Test func buildRegisterDestinationPathRejectsExistingTargetDirectory() throws {
     try withTemporaryDirectory { temporaryDirectoryURL in
         let homeDirectoryURL = temporaryDirectoryURL
             .appendingPathComponent("home", isDirectory: true)
@@ -116,8 +116,8 @@ import Testing
         try createDirectory(at: sourceDirectoryURL)
         try createDirectory(at: targetDirectoryURL)
 
-        #expect(throws: TransferCommandError.targetDirectoryAlreadyExists(targetDirectoryURL)) {
-            _ = try TransferCommandSupport.buildTransferDestinationPath(
+        #expect(throws: RegisterCommandError.targetDirectoryAlreadyExists(targetDirectoryURL)) {
+            _ = try RegisterCommandSupport.buildRegisterDestinationPath(
                 for: sourceDirectoryURL,
                 fileManager: .default,
                 homeDirectoryURL: homeDirectoryURL
@@ -126,12 +126,12 @@ import Testing
     }
 }
 
-@Test func buildTransferDestinationPathRejectsMovingDirectoryIntoDescendant() throws {
+@Test func buildRegisterDestinationPathRejectsMovingDirectoryIntoDescendant() throws {
     try withTemporaryDirectory { temporaryDirectoryURL in
         let sourceDirectoryURL = temporaryDirectoryURL.standardizedFileURL
 
-        #expect(throws: TransferCommandError.sourceContainsDestination(sourceDirectoryURL)) {
-            _ = try TransferCommandSupport.buildTransferDestinationPath(
+        #expect(throws: RegisterCommandError.sourceContainsDestination(sourceDirectoryURL)) {
+            _ = try RegisterCommandSupport.buildRegisterDestinationPath(
                 for: sourceDirectoryURL,
                 fileManager: .default,
                 homeDirectoryURL: sourceDirectoryURL
@@ -142,7 +142,7 @@ import Testing
 
 private func withTemporaryDirectory(_ body: (URL) throws -> Void) throws {
     let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-        .appendingPathComponent("QuickDevTransferCommandTests-\(UUID().uuidString)", isDirectory: true)
+        .appendingPathComponent("QuickDevRegisterCommandTests-\(UUID().uuidString)", isDirectory: true)
 
     try FileManager.default.createDirectory(at: temporaryDirectoryURL, withIntermediateDirectories: true)
     defer {

@@ -79,19 +79,19 @@ Use `--root` when you want to resolve names against a specific workspace root:
 qd open Wonderway --root ~/Developer
 ```
 
-### Transfer an existing directory into `~/Developer`
+### Register an existing directory into `~/Developer`
 
-`qd transfer` moves a directory into `~/Developer` and then refreshes the project index (same cache update behavior as `qd scan`).
+`qd register` moves a directory into `~/Developer` and then refreshes the project index (same cache update behavior as `qd scan`).
 
 ```bash
-qd transfer ~/Work/Wonderway
+qd register ~/Work/Wonderway
 ```
 
 When the directory does not match known project markers, QuickDev asks for confirmation before moving:
 
 ```text
 Directory '/Users/yourname/Work/Notes' does not look like a known project.
-Transfer anyway to ~/Developer? [y/N]:
+Register anyway to ~/Developer? [y/N]:
 ```
 
 ### Clone a repository into `~/Developer`
@@ -145,7 +145,7 @@ Options:
 
 - `--root <path>`: Require the saved index to match this root. If it does not exist yet, QuickDev scans this root, saves a fresh index, and then resolves the project name.
 
-### `qd transfer`
+### `qd register`
 
 Move an existing directory into `~/Developer` and refresh the cached index.
 

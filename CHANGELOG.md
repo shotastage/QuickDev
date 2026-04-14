@@ -2,7 +2,7 @@
 
 ## 0.0.5
 
-- [x] Add a `transfer` command to validate a directory as a project candidate, ask for `Y/N` confirmation when unclear, move it safely into `~/Developer/`, and refresh the index automatically.
+- [x] Rename the `transfer` command to `register` while preserving the same directory validation, confirmation, move, and index refresh behavior.
 - [x] Update `clone` so a successful repository clone also refreshes the cached project index automatically.
 
 - [ ] Add a `archive` command to safely archive and compress project directory.

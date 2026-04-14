@@ -44,7 +44,7 @@ QuickDev is early-stage. The current release includes:
 - An Apple Silicon macOS CLI exposed as `qd`
 - Read-only project scanning with `scan`
 - Cached index inspection with `list`
-- Safe directory transfer into `~/Developer` with `transfer`
+- Safe directory registration into `~/Developer` with `register`
 - Visual Studio Code launch from indexed names with `open`
 - Project type detection for common development stacks
 - Git repository inspection for origin URL and dirty-state metadata
@@ -160,10 +160,10 @@ When needed, resolve names against a specific root:
 qd open Wonderway --root ~/Developer
 ```
 
-### Transfer an existing directory into `~/Developer`
+### Register an existing directory into `~/Developer`
 
 ```bash
-qd transfer ~/Work/Wonderway
+qd register ~/Work/Wonderway
 ```
 
 ## Development
