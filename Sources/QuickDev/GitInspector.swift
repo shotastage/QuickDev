@@ -9,6 +9,20 @@ import Foundation
 struct GitInspectionResult: Equatable, Sendable {
     let remoteURL: String?
     let hasUncommittedChanges: Bool?
+    let headCommit: String?
+    let branch: String?
+
+    init(
+        remoteURL: String?,
+        hasUncommittedChanges: Bool?,
+        headCommit: String? = nil,
+        branch: String? = nil
+    ) {
+        self.remoteURL = remoteURL
+        self.hasUncommittedChanges = hasUncommittedChanges
+        self.headCommit = headCommit
+        self.branch = branch
+    }
 }
 
 public struct GitInspector {
@@ -19,6 +33,12 @@ extension GitInspector: GitInspecting {
     func inspect(directoryURL: URL) -> GitInspectionResult {
         let remoteURL = trimmedStdout(
             for: ["-C", directoryURL.path, "remote", "get-url", "origin"]
+        )
+        let headCommit = trimmedStdout(
+            for: ["-C", directoryURL.path, "rev-parse", "HEAD"]
+        )
+        let branch = trimmedStdout(
+            for: ["-C", directoryURL.path, "rev-parse", "--abbrev-ref", "HEAD"]
         )
 
         let dirtyResult = runGit(arguments: ["-C", directoryURL.path, "status", "--porcelain"])
@@ -32,7 +52,9 @@ extension GitInspector: GitInspecting {
 
         return GitInspectionResult(
             remoteURL: remoteURL,
-            hasUncommittedChanges: hasUncommittedChanges
+            hasUncommittedChanges: hasUncommittedChanges,
+            headCommit: headCommit,
+            branch: branch
         )
     }
 
