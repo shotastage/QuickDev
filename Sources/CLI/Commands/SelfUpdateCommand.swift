@@ -6,6 +6,7 @@
 
 import ArgumentParser
 import Foundation
+import SwiftCLIKit
 
 struct SelfUpdateCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
@@ -42,13 +43,7 @@ struct SelfUpdateCommand: ParsableCommand {
         if yes == false {
             print("Current version: \(currentVersion)")
             print("Update source: \(repo) (version: \(targetVersion), branch: \(branch))")
-            print("Proceed with self-update? [y/N]: ", terminator: "")
-
-            guard let response = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() else {
-                throw ValidationError("Update cancelled.")
-            }
-
-            if response != "y" && response != "yes" {
+            if ConfirmationPrompt.ask(prompt: "Proceed with self-update? [y/N]: ") == false {
                 throw ValidationError("Update cancelled.")
             }
         }

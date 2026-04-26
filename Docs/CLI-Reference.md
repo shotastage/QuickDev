@@ -79,6 +79,38 @@ Use `--root` when you want to resolve names against a specific workspace root:
 qd open Wonderway --root ~/Developer
 ```
 
+### Register an existing directory into `~/Developer`
+
+`qd register` moves a directory into `~/Developer` and then refreshes the project index (same cache update behavior as `qd scan`).
+
+```bash
+qd register ~/Work/Wonderway
+```
+
+When the directory does not match known project markers, QuickDev asks for confirmation before moving:
+
+```text
+Directory '/Users/yourname/Work/Notes' does not look like a known project.
+Register anyway to ~/Developer? [y/N]:
+```
+
+### Clone a repository into `~/Developer`
+
+`qd clone` clones a Git repository into `~/Developer` and then refreshes the cached project index so the new project is immediately available to `qd list` and `qd open`.
+
+```bash
+qd clone git@github.com:user/Wonderway.git
+```
+
+Example output:
+
+```text
+Cloned to ~/Developer/Wonderway
+Scanned root: /Users/yourname/Developer
+Projects found: 4
+Saved index: /Users/yourname/.devctl/projects.json
+```
+
 ## Command Reference
 
 ### `qd scan`
@@ -112,3 +144,33 @@ Arguments:
 Options:
 
 - `--root <path>`: Require the saved index to match this root. If it does not exist yet, QuickDev scans this root, saves a fresh index, and then resolves the project name.
+
+### `qd register`
+
+Move an existing directory into `~/Developer` and refresh the cached index.
+
+Arguments:
+
+- `<directory-path>`: Absolute, relative, or `~`-expanded path to the directory to move.
+
+Behavior:
+
+- Checks whether the directory appears to be a known project type.
+- If the directory does not look like a project, prompts for `Y/N` confirmation before continuing.
+- Refuses unsafe moves (for example, existing destination collisions or self-descendant move paths).
+- Runs an index refresh after a successful move.
+
+### `qd clone`
+
+Clone a Git repository into `~/Developer` and refresh the cached project index.
+
+Arguments:
+
+- `<repository-url>`: Git repository URL in HTTPS or SSH form.
+
+Behavior:
+
+- Extracts the destination directory name from the repository URL.
+- Refuses to overwrite an existing target directory under `~/Developer`.
+- Runs `git clone` into `~/Developer/<repository-name>`.
+- Runs an index refresh after a successful clone.

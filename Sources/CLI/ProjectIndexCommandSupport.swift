@@ -7,6 +7,12 @@
 import Foundation
 import QuickDev
 
+struct ProjectIndexRefreshResult {
+    let rootURL: URL
+    let index: ProjectIndex
+    let saveResult: ProjectIndexStoreSaveResult
+}
+
 struct ProjectIndexCommandSupport {
     private let fileManager: FileManager
     private let now: () -> Date
@@ -36,6 +42,17 @@ struct ProjectIndexCommandSupport {
             fileURLWithPath: expandedPath,
             relativeTo: URL(fileURLWithPath: fileManager.currentDirectoryPath, isDirectory: true)
         ).standardizedFileURL
+    }
+
+    func refreshIndex(
+        scanner: ProjectScanner,
+        store: ProjectIndexStore,
+        rootURL: URL? = nil
+    ) throws -> ProjectIndexRefreshResult {
+        let targetRootURL = (rootURL ?? defaultRootURL).standardizedFileURL
+        let index = try scanner.scan(rootURL: targetRootURL)
+        let saveResult = try store.save(index)
+        return ProjectIndexRefreshResult(rootURL: targetRootURL, index: index, saveResult: saveResult)
     }
 
     func renderJSON(_ index: ProjectIndex) throws -> String {

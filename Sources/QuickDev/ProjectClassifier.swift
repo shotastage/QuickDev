@@ -18,6 +18,14 @@ public struct ProjectClassifier {
     public init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
     }
+
+    /// Returns whether a directory is likely a development project based on known markers.
+    /// - Parameter directoryURL: Directory URL to evaluate.
+    /// - Returns: `true` when the directory contains one or more known project markers.
+    /// - Throws: Any filesystem error encountered while reading the directory contents.
+    public func isLikelyProject(directoryURL: URL) throws -> Bool {
+        try classify(directoryURL: directoryURL).isProject
+    }
 }
 
 extension ProjectClassifier: ProjectClassifying {

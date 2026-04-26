@@ -13,8 +13,19 @@ import Testing
         let classification = try classifier.classify(directoryURL: projectURL)
 
         #expect(classification.isProject)
+        #expect(try classifier.isLikelyProject(directoryURL: projectURL))
         #expect(classification.isGitRepository)
         #expect(classification.types == [.swiftPackage, .gitRepository])
+    }
+}
+
+@Test func classifierMarksPlainDirectoryAsNonProject() throws {
+    try withTemporaryDirectory { directoryURL in
+        let plainDirectoryURL = directoryURL.appendingPathComponent("PlainFolder", isDirectory: true)
+        try createDirectory(at: plainDirectoryURL)
+
+        let classifier = ProjectClassifier(fileManager: .default)
+        #expect(try classifier.isLikelyProject(directoryURL: plainDirectoryURL) == false)
     }
 }
 

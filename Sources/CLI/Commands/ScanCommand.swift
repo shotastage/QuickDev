@@ -27,17 +27,17 @@ struct ScanCommand: ParsableCommand {
         let scanner = ProjectScanner(fileManager: fileManager)
         let store = ProjectIndexStore(fileManager: fileManager)
 
-        let index = try scanner.scan(rootURL: rootURL)
-        let saveResult = try store.save(index)
+        let refreshResult = try support.refreshIndex(scanner: scanner, store: store, rootURL: rootURL)
+        let index = refreshResult.index
 
         if json {
             print(try support.renderJSON(index))
             return
         }
 
-        print("Scanned root: \(rootURL.path)")
+        print("Scanned root: \(refreshResult.rootURL.path)")
         print("Projects found: \(index.projects.count)")
-        print("Saved index: \(saveResult.indexFileURL.path)")
+        print("Saved index: \(refreshResult.saveResult.indexFileURL.path)")
 
         guard index.projects.isEmpty == false else {
             return
