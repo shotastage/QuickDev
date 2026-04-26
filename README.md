@@ -45,13 +45,14 @@ QuickDev is early-stage. The current release includes:
 - Read-only project scanning with `scan`
 - Cached index inspection with `list`
 - Safe directory registration into `~/Developer` with `register`
+- Safe project restoration from `.qda` archives with `restore`
 - Visual Studio Code launch from indexed names with `open`
 - Project type detection for common development stacks
 - Git repository inspection for origin URL and dirty-state metadata
 - JSON index persistence to a local cache directory
 - Human-readable table output or full JSON output
 
-The broader lifecycle features described below are planned, but not yet implemented in the CLI.
+Additional lifecycle features described below are still planned, but not yet implemented in the CLI.
 
 ## Goals
 
@@ -164,6 +165,18 @@ qd open Wonderway --root ~/Developer
 
 ```bash
 qd register ~/Work/Wonderway
+```
+
+### Restore a `.qda` archive
+
+```bash
+qd restore ~/.quickdev/archive/wonderway-20260420-121000.qda
+```
+
+Preview the restore target without extracting files:
+
+```bash
+qd restore ~/.quickdev/archive/wonderway-20260420-121000.qda --dry-run
 ```
 
 ## Development

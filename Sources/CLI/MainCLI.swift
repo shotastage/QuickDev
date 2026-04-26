@@ -21,6 +21,7 @@ import ArgumentParser
                     CloneCommand.self,
                     RegisterCommand.self,
                     ArchiveCommand.self,
+                    RestoreCommand.self,
                     OpenCommand.self,
                     SelfUpdateCommand.self,
                 ],

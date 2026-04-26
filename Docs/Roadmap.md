@@ -5,7 +5,6 @@ The current codebase implements scanning and indexing. The following capabilitie
 ## Core lifecycle commands
 
 - `archive` to create recoverable project archives
-- `restore` to restore archived projects
 - `trash` to move projects into a protected deletion workflow
 - `purge` to permanently remove projects after explicit confirmation
 

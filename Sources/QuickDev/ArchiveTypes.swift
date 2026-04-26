@@ -256,3 +256,27 @@ public struct ArchiveWriteResult: Equatable, Sendable {
         self.archivedBytes = archivedBytes
     }
 }
+
+public struct ArchiveRestoreInspection: Equatable, Sendable {
+    public let archiveURL: URL
+    public let manifest: ArchiveManifest
+    public let payloadEntries: [String]
+
+    public init(archiveURL: URL, manifest: ArchiveManifest, payloadEntries: [String]) {
+        self.archiveURL = archiveURL
+        self.manifest = manifest
+        self.payloadEntries = payloadEntries
+    }
+}
+
+public struct ArchiveRestoreResult: Equatable, Sendable {
+    public let destinationURL: URL
+    public let manifest: ArchiveManifest
+    public let restoredFileCount: Int
+
+    public init(destinationURL: URL, manifest: ArchiveManifest, restoredFileCount: Int) {
+        self.destinationURL = destinationURL
+        self.manifest = manifest
+        self.restoredFileCount = restoredFileCount
+    }
+}

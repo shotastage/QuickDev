@@ -111,6 +111,26 @@ Projects found: 4
 Saved index: /Users/yourname/.devctl/projects.json
 ```
 
+### Restore a project archive into `~/Developer`
+
+`qd restore` validates a `.qda` archive, reads its embedded manifest, and restores the archived payload into `~/Developer/<project-name>` by default.
+
+```bash
+qd restore ~/.quickdev/archive/wonderway-20260420-121000.qda
+```
+
+Preview the manifest and destination without extracting files:
+
+```bash
+qd restore ~/.quickdev/archive/wonderway-20260420-121000.qda --dry-run
+```
+
+Restore into a custom destination:
+
+```bash
+qd restore ~/.quickdev/archive/wonderway-20260420-121000.qda --destination ~/Recovered/Wonderway
+```
+
 ## Command Reference
 
 ### `qd scan`
@@ -174,3 +194,23 @@ Behavior:
 - Refuses to overwrite an existing target directory under `~/Developer`.
 - Runs `git clone` into `~/Developer/<repository-name>`.
 - Runs an index refresh after a successful clone.
+
+### `qd restore`
+
+Restore a project from a `.qda` archive.
+
+Arguments:
+
+- `<archive-path>`: Absolute, relative, or `~`-expanded path to the archive file.
+
+Options:
+
+- `--destination <path>`: Restore into a custom destination directory. Defaults to `~/Developer/<project-name>`.
+- `--dry-run`: Print manifest metadata, chosen destination, and restore hints without extracting files.
+
+Behavior:
+
+- Validates that the archive contains only the expected `payload/` and `meta/archive.json` structure.
+- Refuses to restore when the destination directory already exists.
+- Restores the archived payload into a new destination directory.
+- Prints embedded restore hints from the archive manifest after a successful restore.
